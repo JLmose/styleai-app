@@ -206,24 +206,27 @@
       setLoadingText('L\'IA génère l\'essayage… ⏳');
 
       // Étape 2 : polling depuis le navigateur toutes les 4s
+      let lastRaw = null;
       for (let i = 0; i < 45; i++) {
         await new Promise(r => setTimeout(r, 4000));
-        setLoadingText(`L'IA génère… ${Math.round((i+1)*4)}s`);
 
         const pollResp = await fetch(`/api/poll?requestId=${encodeURIComponent(requestId)}&apiKey=${encodeURIComponent(key)}`);
         const pollData = await pollResp.json();
-        const status = pollData.body?.status;
+        lastRaw = pollData;
+        const status = pollData.body?.status || pollData.status || 'inconnu';
+        setLoadingText(`Statut LightX : "${status}" — ${Math.round((i+1)*4)}s`);
 
-        if (status === 'active' && pollData.body?.output) {
-          showResult(pollData.body.output);
+        const output = pollData.body?.output || pollData.output;
+        if ((status === 'active' || status === 'success' || status === 'completed') && output) {
+          showResult(output);
           return;
-        } else if (status === 'failed') {
-          throw new Error('Génération échouée côté LightX');
+        } else if (status === 'failed' || status === 'error') {
+          throw new Error('Génération échouée côté LightX — réponse : ' + JSON.stringify(pollData).slice(0, 300));
         }
-        // 'init' ou 'processing' → on continue
+        // sinon on continue de poller
       }
 
-      throw new Error('Temps dépassé (3 min) — réessaie');
+      throw new Error('Temps dépassé (3 min). Dernière réponse LightX : ' + JSON.stringify(lastRaw).slice(0, 300));
 
     } catch (err) {
       document.getElementById('loading').classList.remove('visible');
