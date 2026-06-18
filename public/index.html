@@ -184,28 +184,102 @@
       line-height: 1.5;
     }
 
-    /* Steps */
-    .steps {
-      display: flex;
+    /* Tips box */
+    .tips-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 12px;
-      align-items: center;
-      color: #555;
-      font-size: 13px;
-      flex-wrap: wrap;
-      justify-content: center;
+      width: 100%;
+      max-width: 700px;
     }
-    .step { display: flex; align-items: center; gap: 6px; }
-    .step-num {
-      width: 22px; height: 22px;
-      border-radius: 50%;
-      background: #222;
-      color: #888;
+    .tip-card {
+      background: #1a1a1a;
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .tip-card .tip-title {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .tip-card.do .tip-title { color: #4ade80; }
+    .tip-card.dont .tip-title { color: #f87171; }
+    .tip-card ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .tip-card ul li {
+      font-size: 13px;
+      color: #aaa;
+      display: flex;
+      gap: 7px;
+      align-items: flex-start;
+      line-height: 1.4;
+    }
+    .tip-card.do ul li::before { content: "✓"; color: #4ade80; font-weight: 700; flex-shrink: 0; }
+    .tip-card.dont ul li::before { content: "✕"; color: #f87171; font-weight: 700; flex-shrink: 0; }
+
+    /* Séparateur de section */
+    .section-label {
       font-size: 11px;
       font-weight: 700;
-      display: flex; align-items: center; justify-content: center;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #444;
+      align-self: flex-start;
+      padding-left: 4px;
     }
-    .step-num.active { background: #a78bfa; color: #fff; }
-    .step-arrow { color: #333; }
+
+    /* Badge warning sur la carte personne */
+    .card-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 2px;
+    }
+    .card-badge.important { background: #2d1f00; color: #fbbf24; border: 1px solid #78350f; }
+
+    /* Checklist modale avant génération */
+    .checklist-bar {
+      width: 100%;
+      max-width: 500px;
+      background: #1a1a00;
+      border: 1px solid #713f12;
+      border-radius: 12px;
+      padding: 14px 18px;
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .checklist-bar.visible { display: flex; }
+    .checklist-bar .check-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fbbf24;
+      margin-bottom: 2px;
+    }
+    .checklist-bar label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: #ccc;
+      cursor: pointer;
+    }
+    .checklist-bar input[type="checkbox"] {
+      display: inline;
+      width: 16px;
+      height: 16px;
+      accent-color: #a78bfa;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -217,15 +291,47 @@
 <div class="container">
   <div>
     <h1>Essaie des vêtements<br>sur <span>tes photos</span></h1>
-    <p class="subtitle" style="margin-top:10px;">Upload une photo de toi et une photo du vêtement — l'IA fait le reste en quelques secondes.</p>
+    <p class="subtitle" style="margin-top:10px;">Upload une photo de toi et une photo du vêtement — suis les conseils ci-dessous pour un résultat optimal.</p>
   </div>
 
-  <div class="steps">
-    <div class="step"><div class="step-num active">1</div> Photo de toi</div>
-    <div class="step-arrow">→</div>
-    <div class="step"><div class="step-num active">2</div> Photo du vêtement</div>
-    <div class="step-arrow">→</div>
-    <div class="step"><div class="step-num active">3</div> Résultat IA ✨</div>
+  <!-- Tips -->
+  <div class="tips-grid">
+    <div class="tip-card do">
+      <div class="tip-title">📸 Photo de toi — À faire</div>
+      <ul>
+        <li>Corps entier visible, debout droit</li>
+        <li>Vêtement simple (1 seule couche)</li>
+        <li>Fond uni ou clair de préférence</li>
+        <li>Bonne lumière, image nette</li>
+      </ul>
+    </div>
+    <div class="tip-card dont">
+      <div class="tip-title">🚫 Photo de toi — À éviter</div>
+      <ul>
+        <li>Plusieurs couches (veste + pull)</li>
+        <li>Photo trop sombre ou floue</li>
+        <li>Corps coupé ou en oblique</li>
+        <li>Fond très chargé / encombré</li>
+      </ul>
+    </div>
+    <div class="tip-card do">
+      <div class="tip-title">👗 Vêtement — À faire</div>
+      <ul>
+        <li>Vêtement seul sur fond blanc</li>
+        <li>Photo produit e-commerce</li>
+        <li>Porté sur mannequin / cintre</li>
+        <li>Vêtement entier visible</li>
+      </ul>
+    </div>
+    <div class="tip-card dont">
+      <div class="tip-title">🚫 Vêtement — À éviter</div>
+      <ul>
+        <li>Vêtement plié ou froissé</li>
+        <li>Image trop petite ou pixelisée</li>
+        <li>Plusieurs vêtements dans la photo</li>
+        <li>Accessoires qui cachent la pièce</li>
+      </ul>
+    </div>
   </div>
 
   <div class="upload-row">
@@ -233,9 +339,10 @@
     <div class="upload-card" id="card-person" onclick="document.getElementById('input-person').click()">
       <input type="file" id="input-person" accept="image/*" onchange="handleFile(event, 'person')">
       <div class="upload-placeholder">
+        <div class="card-badge important">⚠️ 1 seule couche de vêtement</div>
         <div class="icon">🧍</div>
         <div class="label">Ta photo</div>
-        <div class="hint">Debout, fond neutre de préférence</div>
+        <div class="hint">Corps entier · debout · fond simple</div>
       </div>
       <img class="preview" id="preview-person" alt="Ta photo" />
     </div>
@@ -244,12 +351,20 @@
     <div class="upload-card" id="card-cloth" onclick="document.getElementById('input-cloth').click()">
       <input type="file" id="input-cloth" accept="image/*" onchange="handleFile(event, 'cloth')">
       <div class="upload-placeholder">
+        <div class="card-badge important">⚠️ 1 seul vêtement visible</div>
         <div class="icon">👗</div>
-        <div class="label">Le vêtement</div>
-        <div class="hint">Photo du vêtement seul ou porté</div>
+        <div class="label">Le vêtement à essayer</div>
+        <div class="hint">Fond blanc · mannequin · cintre · flat lay</div>
       </div>
       <img class="preview" id="preview-cloth" alt="Vêtement" />
     </div>
+  </div>
+
+  <!-- Checklist avant génération -->
+  <div class="checklist-bar" id="checklist">
+    <div class="check-title">⚡ Vérifie avant de générer</div>
+    <label><input type="checkbox" id="chk1" onchange="updateBtn()"> Ma photo montre mon corps entier avec <strong>une seule tenue simple</strong></label>
+    <label><input type="checkbox" id="chk2" onchange="updateBtn()"> Le vêtement à essayer est <strong>clairement visible</strong> et seul dans l'image</label>
   </div>
 
   <button class="btn-generate" id="btn-gen" onclick="generate()" disabled>
@@ -279,6 +394,13 @@
   let pollInterval = null;
   let pollCount = 0;
 
+  function updateBtn() {
+    const hasImages = personB64 && clothB64;
+    const chk1 = document.getElementById('chk1')?.checked;
+    const chk2 = document.getElementById('chk2')?.checked;
+    document.getElementById('btn-gen').disabled = !(hasImages && chk1 && chk2);
+  }
+
   function handleFile(evt, type) {
     const file = evt.target.files[0];
     if (!file) return;
@@ -294,7 +416,11 @@
         document.getElementById('preview-cloth').src = b64;
         document.getElementById('card-cloth').classList.add('has-image');
       }
-      document.getElementById('btn-gen').disabled = !(personB64 && clothB64);
+      // Afficher la checklist dès qu'une image est uploadée
+      if (personB64 || clothB64) {
+        document.getElementById('checklist').classList.add('visible');
+      }
+      updateBtn();
     };
     reader.readAsDataURL(file);
   }
