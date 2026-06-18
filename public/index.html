@@ -214,7 +214,7 @@
         const pollData = await pollResp.json();
         lastRaw = pollData;
         const status = pollData.body?.status || pollData.status || 'inconnu';
-        setLoadingText(`[${pollResp.status}] ${JSON.stringify(pollData).slice(0,150)}`);
+        setLoadingText(`Statut LightX : "${status}" — ${Math.round((i+1)*4)}s`);
 
         const output = pollData.body?.output || pollData.output;
         if ((status === 'active' || status === 'success' || status === 'completed') && output) {
