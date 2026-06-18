@@ -1,27 +1,59 @@
-export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+export const config = { runtime: 'edge' };
 
-  if (req.method === 'OPTIONS') return res.status(200).end();
+const LIGHTX_API_KEY = 'bf8f904d12974d389c10f9e324f85c96_06e516b72750409a9067d3435766ada0_andoraitools';
+const LIGHTX_STATUS_URL = 'https://api.lightxeditor.com/external/api/v1/order-status';
 
-  const { requestId, apiKey } = req.query;
-  if (!requestId || !apiKey) {
-    return res.status(400).json({ error: 'requestId et apiKey requis' });
+export default async function handler(req) {
+  // CORS preflight
+  if (req.method === 'OPTIONS') {
+    return new Response(null, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
+    });
+  }
+
+  if (req.method !== 'POST') {
+    return new Response(JSON.stringify({ error: 'Méthode non autorisée' }), {
+      status: 405,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+    });
   }
 
   try {
-    const pr = await fetch(
-      `https://api.lightxeditor.com/external/api/v1/order-status`,
-      {
-        method: 'POST',
-        headers: { 'x-api-key': apiKey, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId: requestId }),
-      }
-    );
-    const pd = await pr.json();
-    return res.status(200).json(pd);
+    const body = await req.json();
+    const { orderId } = body;
+
+    if (!orderId) {
+      return new Response(JSON.stringify({ error: 'orderId manquant' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      });
+    }
+
+    const statusRes = await fetch(LIGHTX_STATUS_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': LIGHTX_API_KEY,
+      },
+      body: JSON.stringify({ orderId }),
+    });
+
+    const statusData = await statusRes.json();
+
+    // Renvoie la réponse brute complète au navigateur
+    return new Response(JSON.stringify(statusData), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+    });
+
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+    });
   }
 }
