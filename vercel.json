@@ -1,10 +1,14 @@
 {
   "functions": {
     "api/proxy.js": {
-      "maxDuration": 60
+      "maxDuration": 30
     },
     "api/poll.js": {
       "maxDuration": 10
     }
-  }
+  },
+  "rewrites": [
+    { "source": "/api/proxy", "destination": "/api/proxy.js" },
+    { "source": "/api/poll",  "destination": "/api/poll.js"  }
+  ]
 }
