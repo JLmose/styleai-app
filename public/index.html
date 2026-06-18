@@ -7,219 +7,48 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0A0A0A;
-    --surface: #141414;
-    --surface2: #1E1E1E;
-    --accent: #E8A4B8;
-    --accent2: #C47E95;
-    --text: #F8F5F0;
-    --text2: #A09890;
-    --radius: 16px;
+    --bg: #0A0A0A; --surface: #141414; --surface2: #1E1E1E;
+    --accent: #E8A4B8; --accent2: #C47E95;
+    --text: #F8F5F0; --text2: #A09890; --radius: 16px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 24px 16px 48px;
-  }
-  header {
-    text-align: center;
-    margin-bottom: 32px;
-  }
-  header h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(28px, 7vw, 42px);
-    background: linear-gradient(135deg, var(--text), var(--accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 6px;
-  }
-  header p {
-    color: var(--text2);
-    font-size: 14px;
-    font-weight: 300;
-  }
-  .card {
-    background: var(--surface);
-    border: 1px solid #2a2a2a;
-    border-radius: var(--radius);
-    padding: 20px;
-    width: 100%;
-    max-width: 480px;
-    margin-bottom: 16px;
-  }
-  .card-title {
-    font-size: 11px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    color: var(--accent);
-    margin-bottom: 14px;
-  }
-  .upload-zone {
-    border: 1.5px dashed #333;
-    border-radius: 12px;
-    padding: 28px 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: all .2s;
-    position: relative;
-    overflow: hidden;
-    background: var(--surface2);
-  }
-  .upload-zone:hover, .upload-zone.dragover {
-    border-color: var(--accent);
-    background: rgba(232,164,184,.05);
-  }
-  .upload-zone input[type=file] {
-    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
-  }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 24px 16px 48px; }
+  header { text-align: center; margin-bottom: 32px; }
+  header h1 { font-family: 'Playfair Display', serif; font-size: clamp(28px,7vw,42px); background: linear-gradient(135deg, var(--text), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 6px; }
+  header p { color: var(--text2); font-size: 14px; font-weight: 300; }
+  .card { background: var(--surface); border: 1px solid #2a2a2a; border-radius: var(--radius); padding: 20px; width: 100%; max-width: 480px; margin-bottom: 16px; }
+  .card-title { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 14px; }
+  .upload-zone { border: 1.5px dashed #333; border-radius: 12px; padding: 28px 20px; text-align: center; cursor: pointer; transition: all .2s; position: relative; overflow: hidden; background: var(--surface2); }
+  .upload-zone:hover, .upload-zone.dragover { border-color: var(--accent); background: rgba(232,164,184,.05); }
+  .upload-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
   .upload-zone .icon { font-size: 32px; margin-bottom: 8px; }
   .upload-zone .label { font-size: 13px; color: var(--text2); }
   .upload-zone .sublabel { font-size: 11px; color: #555; margin-top: 4px; }
-  .preview-wrap {
-    position: relative;
-    border-radius: 12px;
-    overflow: hidden;
-    background: var(--surface2);
-  }
-  .preview-wrap img {
-    width: 100%;
-    max-height: 280px;
-    object-fit: cover;
-    display: block;
-    border-radius: 12px;
-  }
-  .preview-wrap .remove-btn {
-    position: absolute;
-    top: 8px; right: 8px;
-    background: rgba(10,10,10,.8);
-    border: 1px solid #333;
-    color: var(--text);
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    font-size: 14px;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .api-section { }
-  .api-input-wrap {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-  .api-input {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid #2a2a2a;
-    border-radius: 10px;
-    color: var(--text);
-    font-size: 13px;
-    padding: 12px 40px 12px 14px;
-    outline: none;
-    transition: border-color .2s;
-    font-family: 'Inter', sans-serif;
-  }
+  .preview-wrap { position: relative; border-radius: 12px; overflow: hidden; background: var(--surface2); }
+  .preview-wrap img { width: 100%; max-height: 280px; object-fit: cover; display: block; border-radius: 12px; }
+  .preview-wrap .remove-btn { position: absolute; top: 8px; right: 8px; background: rgba(10,10,10,.8); border: 1px solid #333; color: var(--text); width: 28px; height: 28px; border-radius: 50%; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .api-input-wrap { position: relative; display: flex; align-items: center; }
+  .api-input { width: 100%; background: var(--surface2); border: 1px solid #2a2a2a; border-radius: 10px; color: var(--text); font-size: 13px; padding: 12px 40px 12px 14px; outline: none; transition: border-color .2s; font-family: 'Inter', sans-serif; }
   .api-input:focus { border-color: var(--accent); }
   .api-input::placeholder { color: #444; }
-  .eye-btn {
-    position: absolute; right: 12px;
-    background: none; border: none; cursor: pointer;
-    color: var(--text2); font-size: 16px; padding: 0;
-  }
-  .hint {
-    font-size: 11px;
-    color: var(--text2);
-    margin-top: 8px;
-    line-height: 1.6;
-  }
+  .eye-btn { position: absolute; right: 12px; background: none; border: none; cursor: pointer; color: var(--text2); font-size: 16px; padding: 0; }
+  .hint { font-size: 11px; color: var(--text2); margin-top: 8px; line-height: 1.6; }
   .hint a { color: var(--accent); text-decoration: none; }
-  .btn-generate {
-    width: 100%;
-    max-width: 480px;
-    padding: 16px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: #0A0A0A;
-    font-size: 15px;
-    font-weight: 600;
-    border: none;
-    border-radius: var(--radius);
-    cursor: pointer;
-    transition: opacity .2s, transform .1s;
-    font-family: 'Inter', sans-serif;
-    letter-spacing: .3px;
-    margin-bottom: 16px;
-  }
+  .btn-generate { width: 100%; max-width: 480px; padding: 16px; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #0A0A0A; font-size: 15px; font-weight: 600; border: none; border-radius: var(--radius); cursor: pointer; transition: opacity .2s, transform .1s; font-family: 'Inter', sans-serif; letter-spacing: .3px; margin-bottom: 16px; }
   .btn-generate:hover:not(:disabled) { opacity: .9; transform: translateY(-1px); }
   .btn-generate:disabled { opacity: .4; cursor: not-allowed; transform: none; }
-  .loading {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    padding: 24px;
-    width: 100%;
-    max-width: 480px;
-  }
+  .loading { display: none; flex-direction: column; align-items: center; gap: 12px; padding: 24px; width: 100%; max-width: 480px; }
   .loading.visible { display: flex; }
-  .spinner {
-    width: 40px; height: 40px;
-    border: 3px solid #222;
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
+  .spinner { width: 40px; height: 40px; border: 3px solid #222; border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .loading p { color: var(--text2); font-size: 13px; }
-  .result-section {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    max-width: 480px;
-    gap: 12px;
-  }
+  .loading-text { color: var(--text2); font-size: 13px; text-align: center; }
+  .result-section { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 480px; gap: 12px; }
   .result-section.visible { display: flex; }
-  .result-section img {
-    width: 100%;
-    border-radius: var(--radius);
-    box-shadow: 0 20px 60px rgba(232,164,184,.15);
-  }
-  .btn-download {
-    display: none;
-    width: 100%;
-    padding: 14px;
-    background: var(--surface);
-    border: 1.5px solid var(--accent);
-    color: var(--accent);
-    font-size: 14px;
-    font-weight: 500;
-    border-radius: var(--radius);
-    cursor: pointer;
-    text-align: center;
-    text-decoration: none;
-    font-family: 'Inter', sans-serif;
-    transition: background .2s;
-  }
+  .result-section img { width: 100%; border-radius: var(--radius); box-shadow: 0 20px 60px rgba(232,164,184,.15); }
+  .btn-download { display: none; width: 100%; padding: 14px; background: var(--surface); border: 1.5px solid var(--accent); color: var(--accent); font-size: 14px; font-weight: 500; border-radius: var(--radius); cursor: pointer; text-align: center; text-decoration: none; font-family: 'Inter', sans-serif; transition: background .2s; }
   .btn-download.visible { display: block; }
   .btn-download:hover { background: rgba(232,164,184,.08); }
-  .error-box {
-    width: 100%; max-width: 480px;
-    background: rgba(255,80,80,.08);
-    border: 1px solid rgba(255,80,80,.3);
-    border-radius: 10px;
-    padding: 12px 16px;
-    font-size: 13px;
-    color: #ff8080;
-    display: none;
-    line-height: 1.5;
-  }
+  .error-box { width: 100%; max-width: 480px; background: rgba(255,80,80,.08); border: 1px solid rgba(255,80,80,.3); border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #ff8080; display: none; line-height: 1.5; }
   .error-box.visible { display: block; }
 </style>
 </head>
@@ -230,7 +59,6 @@
   <p>Essayage virtuel propulsé par l'IA</p>
 </header>
 
-<!-- Photo personne -->
 <div class="card">
   <div class="card-title">📸 Photo de ta copine</div>
   <div class="upload-zone" id="zone-person">
@@ -245,7 +73,6 @@
   </div>
 </div>
 
-<!-- Photo vêtement -->
 <div class="card">
   <div class="card-title">👗 Photo du vêtement</div>
   <div class="upload-zone" id="zone-garment">
@@ -260,32 +87,26 @@
   </div>
 </div>
 
-<!-- Clé API -->
-<div class="card api-section">
+<div class="card">
   <div class="card-title">🔑 Clé API LightX</div>
   <div class="api-input-wrap">
     <input type="password" class="api-input" id="api-key" placeholder="Colle ta clé API LightX ici">
     <button class="eye-btn" onclick="toggleKey()">👁</button>
   </div>
   <p class="hint">
-    Clé gratuite sur <a href="https://www.lightxeditor.com/api/virtual-outfit-try-on/" target="_blank">lightxeditor.com/api</a> — 25 crédits offerts, sans carte bancaire.<br>
-    <strong>Inscription :</strong> clique "Generate API Key Now" → connecte-toi → copie la clé.
+    Gratuit sur <a href="https://www.lightxeditor.com/api/virtual-outfit-try-on/" target="_blank">lightxeditor.com/api</a> — 25 crédits offerts, sans carte bancaire.
   </p>
 </div>
 
-<!-- Bouton -->
 <button class="btn-generate" id="btn-gen" onclick="generate()" disabled>✨ Générer l'essayage</button>
 
-<!-- Loading -->
 <div class="loading" id="loading">
   <div class="spinner"></div>
-  <p>L'IA génère l'essayage… ~20–40 secondes</p>
+  <div class="loading-text" id="loading-text">Upload des images…</div>
 </div>
 
-<!-- Erreur -->
 <div class="error-box" id="error-box"></div>
 
-<!-- Résultat -->
 <div class="result-section" id="result-section">
   <img id="result-img" src="" alt="Résultat" style="display:none">
   <a class="btn-download" id="btn-download" download="essayage.jpg">⬇️ Télécharger la photo</a>
@@ -349,23 +170,15 @@
   document.getElementById('input-garment').addEventListener('change', e => handleFile('garment', e.target.files[0]));
   document.getElementById('api-key').addEventListener('input', checkReady);
 
-  // Drag & drop
   ['person','garment'].forEach(type => {
     const zone = document.getElementById(`zone-${type}`);
     zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
     zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
-    zone.addEventListener('drop', e => {
-      e.preventDefault();
-      zone.classList.remove('dragover');
-      handleFile(type, e.dataTransfer.files[0]);
-    });
+    zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('dragover'); handleFile(type, e.dataTransfer.files[0]); });
   });
 
-  function showError(msg) {
-    const box = document.getElementById('error-box');
-    box.textContent = msg;
-    box.classList.add('visible');
-  }
+  function setLoadingText(t) { document.getElementById('loading-text').textContent = t; }
+  function showError(msg) { const b = document.getElementById('error-box'); b.textContent = msg; b.classList.add('visible'); }
 
   async function generate() {
     const key = document.getElementById('api-key').value.trim();
@@ -375,17 +188,43 @@
     document.getElementById('btn-download').classList.remove('visible');
     document.getElementById('loading').classList.add('visible');
     document.getElementById('btn-gen').disabled = true;
-    document.getElementById('btn-gen').textContent = '⏳ Génération en cours…';
+    document.getElementById('btn-gen').textContent = '⏳ Génération…';
+    setLoadingText('Upload des photos…');
 
     try {
-      const resp = await fetch('/api/proxy', {
+      // Étape 1 : lancer la génération, récupérer requestId
+      setLoadingText('Envoi à LightX…');
+      const startResp = await fetch('/api/proxy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ personBase64: personB64, garmentBase64: garmentB64, apiKey: key }),
       });
-      const data = await resp.json();
-      if (!resp.ok || data.error) throw new Error(data.error || 'Erreur serveur');
-      showResult(data.output);
+      const startData = await startResp.json();
+      if (!startResp.ok || startData.error) throw new Error(startData.error || 'Erreur démarrage');
+
+      const { requestId } = startData;
+      setLoadingText('L\'IA génère l\'essayage… ⏳');
+
+      // Étape 2 : polling depuis le navigateur toutes les 4s
+      for (let i = 0; i < 45; i++) {
+        await new Promise(r => setTimeout(r, 4000));
+        setLoadingText(`L'IA génère… ${Math.round((i+1)*4)}s`);
+
+        const pollResp = await fetch(`/api/poll?requestId=${encodeURIComponent(requestId)}&apiKey=${encodeURIComponent(key)}`);
+        const pollData = await pollResp.json();
+        const status = pollData.body?.status;
+
+        if (status === 'active' && pollData.body?.output) {
+          showResult(pollData.body.output);
+          return;
+        } else if (status === 'failed') {
+          throw new Error('Génération échouée côté LightX');
+        }
+        // 'init' ou 'processing' → on continue
+      }
+
+      throw new Error('Temps dépassé (3 min) — réessaie');
+
     } catch (err) {
       document.getElementById('loading').classList.remove('visible');
       showError('❌ ' + err.message);
