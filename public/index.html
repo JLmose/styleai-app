@@ -1,255 +1,425 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>StyleAI — Essayage Virtuel</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #0A0A0A; --surface: #141414; --surface2: #1E1E1E;
-    --accent: #E8A4B8; --accent2: #C47E95;
-    --text: #F8F5F0; --text2: #A09890; --radius: 16px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 24px 16px 48px; }
-  header { text-align: center; margin-bottom: 32px; }
-  header h1 { font-family: 'Playfair Display', serif; font-size: clamp(28px,7vw,42px); background: linear-gradient(135deg, var(--text), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 6px; }
-  header p { color: var(--text2); font-size: 14px; font-weight: 300; }
-  .card { background: var(--surface); border: 1px solid #2a2a2a; border-radius: var(--radius); padding: 20px; width: 100%; max-width: 480px; margin-bottom: 16px; }
-  .card-title { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 14px; }
-  .upload-zone { border: 1.5px dashed #333; border-radius: 12px; padding: 28px 20px; text-align: center; cursor: pointer; transition: all .2s; position: relative; overflow: hidden; background: var(--surface2); }
-  .upload-zone:hover, .upload-zone.dragover { border-color: var(--accent); background: rgba(232,164,184,.05); }
-  .upload-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-  .upload-zone .icon { font-size: 32px; margin-bottom: 8px; }
-  .upload-zone .label { font-size: 13px; color: var(--text2); }
-  .upload-zone .sublabel { font-size: 11px; color: #555; margin-top: 4px; }
-  .preview-wrap { position: relative; border-radius: 12px; overflow: hidden; background: var(--surface2); }
-  .preview-wrap img { width: 100%; max-height: 280px; object-fit: cover; display: block; border-radius: 12px; }
-  .preview-wrap .remove-btn { position: absolute; top: 8px; right: 8px; background: rgba(10,10,10,.8); border: 1px solid #333; color: var(--text); width: 28px; height: 28px; border-radius: 50%; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-  .api-input-wrap { position: relative; display: flex; align-items: center; }
-  .api-input { width: 100%; background: var(--surface2); border: 1px solid #2a2a2a; border-radius: 10px; color: var(--text); font-size: 13px; padding: 12px 40px 12px 14px; outline: none; transition: border-color .2s; font-family: 'Inter', sans-serif; }
-  .api-input:focus { border-color: var(--accent); }
-  .api-input::placeholder { color: #444; }
-  .eye-btn { position: absolute; right: 12px; background: none; border: none; cursor: pointer; color: var(--text2); font-size: 16px; padding: 0; }
-  .hint { font-size: 11px; color: var(--text2); margin-top: 8px; line-height: 1.6; }
-  .hint a { color: var(--accent); text-decoration: none; }
-  .btn-generate { width: 100%; max-width: 480px; padding: 16px; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #0A0A0A; font-size: 15px; font-weight: 600; border: none; border-radius: var(--radius); cursor: pointer; transition: opacity .2s, transform .1s; font-family: 'Inter', sans-serif; letter-spacing: .3px; margin-bottom: 16px; }
-  .btn-generate:hover:not(:disabled) { opacity: .9; transform: translateY(-1px); }
-  .btn-generate:disabled { opacity: .4; cursor: not-allowed; transform: none; }
-  .loading { display: none; flex-direction: column; align-items: center; gap: 12px; padding: 24px; width: 100%; max-width: 480px; }
-  .loading.visible { display: flex; }
-  .spinner { width: 40px; height: 40px; border: 3px solid #222; border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-text { color: var(--text2); font-size: 13px; text-align: center; }
-  .result-section { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 480px; gap: 12px; }
-  .result-section.visible { display: flex; }
-  .result-section img { width: 100%; border-radius: var(--radius); box-shadow: 0 20px 60px rgba(232,164,184,.15); }
-  .btn-download { display: none; width: 100%; padding: 14px; background: var(--surface); border: 1.5px solid var(--accent); color: var(--accent); font-size: 14px; font-weight: 500; border-radius: var(--radius); cursor: pointer; text-align: center; text-decoration: none; font-family: 'Inter', sans-serif; transition: background .2s; }
-  .btn-download.visible { display: block; }
-  .btn-download:hover { background: rgba(232,164,184,.08); }
-  .error-box { width: 100%; max-width: 480px; background: rgba(255,80,80,.08); border: 1px solid rgba(255,80,80,.3); border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #ff8080; display: none; line-height: 1.5; }
-  .error-box.visible { display: block; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StyleAI – Essayage Virtuel</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f0f0f;
+      color: #f0f0f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid #222;
+    }
+    header .logo { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+    header .logo span { color: #a78bfa; }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      padding: 32px 16px 64px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+    }
+
+    h1 {
+      font-size: clamp(24px, 5vw, 38px);
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.2;
+    }
+    h1 span { color: #a78bfa; }
+
+    p.subtitle {
+      color: #888;
+      text-align: center;
+      font-size: 15px;
+      max-width: 480px;
+    }
+
+    /* Upload cards */
+    .upload-row {
+      display: flex;
+      gap: 20px;
+      width: 100%;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .upload-card {
+      flex: 1;
+      min-width: 240px;
+      max-width: 380px;
+      background: #1a1a1a;
+      border: 2px dashed #333;
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .upload-card:hover { border-color: #a78bfa; background: #1e1a2e; }
+    .upload-card.has-image { border-style: solid; border-color: #a78bfa; }
+
+    .upload-card .icon { font-size: 36px; }
+    .upload-card .label { font-size: 14px; font-weight: 600; color: #ccc; }
+    .upload-card .hint { font-size: 12px; color: #555; }
+
+    .upload-card img.preview {
+      width: 100%;
+      max-height: 280px;
+      object-fit: cover;
+      border-radius: 10px;
+      display: none;
+    }
+    .upload-card.has-image img.preview { display: block; }
+    .upload-card.has-image .upload-placeholder { display: none; }
+
+    .upload-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    input[type="file"] { display: none; }
+
+    /* Bouton générer */
+    .btn-generate {
+      background: linear-gradient(135deg, #7c3aed, #a78bfa);
+      color: white;
+      border: none;
+      padding: 16px 48px;
+      border-radius: 50px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      letter-spacing: 0.3px;
+    }
+    .btn-generate:hover:not(:disabled) { opacity: 0.9; transform: scale(1.02); }
+    .btn-generate:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Zone de résultat */
+    #result-zone {
+      width: 100%;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* Loader */
+    #loader {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .spinner {
+      width: 48px; height: 48px;
+      border: 4px solid #333;
+      border-top-color: #a78bfa;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #status-text { color: #888; font-size: 14px; }
+
+    /* Image résultat */
+    #result-img {
+      display: none;
+      max-width: 100%;
+      max-height: 600px;
+      border-radius: 16px;
+      box-shadow: 0 8px 40px rgba(167,139,250,0.2);
+    }
+
+    /* Bouton télécharger */
+    .btn-download {
+      display: none;
+      background: #1a1a1a;
+      border: 1px solid #a78bfa;
+      color: #a78bfa;
+      padding: 12px 32px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .btn-download:hover { background: #1e1a2e; }
+
+    /* Erreur */
+    #error-box {
+      display: none;
+      background: #2a1515;
+      border: 1px solid #7f1d1d;
+      color: #fca5a5;
+      padding: 16px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      max-width: 500px;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    /* Steps */
+    .steps {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      color: #555;
+      font-size: 13px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .step { display: flex; align-items: center; gap: 6px; }
+    .step-num {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: #222;
+      color: #888;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .step-num.active { background: #a78bfa; color: #fff; }
+    .step-arrow { color: #333; }
+  </style>
 </head>
 <body>
 
 <header>
-  <h1>✨ StyleAI</h1>
-  <p>Essayage virtuel propulsé par l'IA</p>
+  <div class="logo">Style<span>AI</span></div>
 </header>
 
-<div class="card">
-  <div class="card-title">📸 Photo de ta copine</div>
-  <div class="upload-zone" id="zone-person">
-    <input type="file" id="input-person" accept="image/*">
-    <div class="icon">👤</div>
-    <div class="label">Corps entier, face caméra</div>
-    <div class="sublabel">JPG, PNG — fond neutre recommandé</div>
+<div class="container">
+  <div>
+    <h1>Essaie des vêtements<br>sur <span>tes photos</span></h1>
+    <p class="subtitle" style="margin-top:10px;">Upload une photo de toi et une photo du vêtement — l'IA fait le reste en quelques secondes.</p>
   </div>
-  <div class="preview-wrap" id="preview-person" style="display:none">
-    <img id="img-person" src="" alt="Personne">
-    <button class="remove-btn" onclick="removeImg('person')">×</button>
+
+  <div class="steps">
+    <div class="step"><div class="step-num active">1</div> Photo de toi</div>
+    <div class="step-arrow">→</div>
+    <div class="step"><div class="step-num active">2</div> Photo du vêtement</div>
+    <div class="step-arrow">→</div>
+    <div class="step"><div class="step-num active">3</div> Résultat IA ✨</div>
   </div>
-</div>
 
-<div class="card">
-  <div class="card-title">👗 Photo du vêtement</div>
-  <div class="upload-zone" id="zone-garment">
-    <input type="file" id="input-garment" accept="image/*">
-    <div class="icon">🛍️</div>
-    <div class="label">Photo du vêtement à essayer</div>
-    <div class="sublabel">Fond blanc ou sur mannequin — JPG, PNG</div>
+  <div class="upload-row">
+    <!-- Carte personne -->
+    <div class="upload-card" id="card-person" onclick="document.getElementById('input-person').click()">
+      <input type="file" id="input-person" accept="image/*" onchange="handleFile(event, 'person')">
+      <div class="upload-placeholder">
+        <div class="icon">🧍</div>
+        <div class="label">Ta photo</div>
+        <div class="hint">Debout, fond neutre de préférence</div>
+      </div>
+      <img class="preview" id="preview-person" alt="Ta photo" />
+    </div>
+
+    <!-- Carte vêtement -->
+    <div class="upload-card" id="card-cloth" onclick="document.getElementById('input-cloth').click()">
+      <input type="file" id="input-cloth" accept="image/*" onchange="handleFile(event, 'cloth')">
+      <div class="upload-placeholder">
+        <div class="icon">👗</div>
+        <div class="label">Le vêtement</div>
+        <div class="hint">Photo du vêtement seul ou porté</div>
+      </div>
+      <img class="preview" id="preview-cloth" alt="Vêtement" />
+    </div>
   </div>
-  <div class="preview-wrap" id="preview-garment" style="display:none">
-    <img id="img-garment" src="" alt="Vêtement">
-    <button class="remove-btn" onclick="removeImg('garment')">×</button>
+
+  <button class="btn-generate" id="btn-gen" onclick="generate()" disabled>
+    ✨ Générer l'essayage
+  </button>
+
+  <!-- Loader -->
+  <div id="loader">
+    <div class="spinner"></div>
+    <div id="status-text">Chargement des images…</div>
   </div>
-</div>
 
-<div class="card">
-  <div class="card-title">🔑 Clé API LightX</div>
-  <div class="api-input-wrap">
-    <input type="password" class="api-input" id="api-key" placeholder="Colle ta clé API LightX ici">
-    <button class="eye-btn" onclick="toggleKey()">👁</button>
+  <!-- Résultat -->
+  <div id="result-zone">
+    <img id="result-img" alt="Résultat essayage" />
+    <a class="btn-download" id="btn-download" download="styleai-essayage.jpg">⬇ Télécharger</a>
   </div>
-  <p class="hint">
-    Gratuit sur <a href="https://www.lightxeditor.com/api/virtual-outfit-try-on/" target="_blank">lightxeditor.com/api</a> — 25 crédits offerts, sans carte bancaire.
-  </p>
-</div>
 
-<button class="btn-generate" id="btn-gen" onclick="generate()" disabled>✨ Générer l'essayage</button>
+  <!-- Erreur -->
+  <div id="error-box" id="error-box"></div>
 
-<div class="loading" id="loading">
-  <div class="spinner"></div>
-  <div class="loading-text" id="loading-text">Upload des images…</div>
-</div>
-
-<div class="error-box" id="error-box"></div>
-
-<div class="result-section" id="result-section">
-  <img id="result-img" src="" alt="Résultat" style="display:none">
-  <a class="btn-download" id="btn-download" download="essayage.jpg">⬇️ Télécharger la photo</a>
 </div>
 
 <script>
-  let personB64 = null, garmentB64 = null;
+  let personB64 = null;
+  let clothB64  = null;
+  let pollInterval = null;
+  let pollCount = 0;
 
-  function toBase64(file) {
-    return new Promise((res, rej) => {
-      const r = new FileReader();
-      r.onload = () => res(r.result);
-      r.onerror = rej;
-      r.readAsDataURL(file);
-    });
-  }
-
-  async function handleFile(type, file) {
+  function handleFile(evt, type) {
+    const file = evt.target.files[0];
     if (!file) return;
-    const b64 = await toBase64(file);
-    if (type === 'person') {
-      personB64 = b64;
-      document.getElementById('img-person').src = b64;
-      document.getElementById('zone-person').style.display = 'none';
-      document.getElementById('preview-person').style.display = 'block';
-    } else {
-      garmentB64 = b64;
-      document.getElementById('img-garment').src = b64;
-      document.getElementById('zone-garment').style.display = 'none';
-      document.getElementById('preview-garment').style.display = 'block';
-    }
-    checkReady();
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const b64 = e.target.result;
+      if (type === 'person') {
+        personB64 = b64;
+        document.getElementById('preview-person').src = b64;
+        document.getElementById('card-person').classList.add('has-image');
+      } else {
+        clothB64 = b64;
+        document.getElementById('preview-cloth').src = b64;
+        document.getElementById('card-cloth').classList.add('has-image');
+      }
+      document.getElementById('btn-gen').disabled = !(personB64 && clothB64);
+    };
+    reader.readAsDataURL(file);
   }
 
-  function removeImg(type) {
-    if (type === 'person') {
-      personB64 = null;
-      document.getElementById('zone-person').style.display = 'block';
-      document.getElementById('preview-person').style.display = 'none';
-      document.getElementById('input-person').value = '';
-    } else {
-      garmentB64 = null;
-      document.getElementById('zone-garment').style.display = 'block';
-      document.getElementById('preview-garment').style.display = 'none';
-      document.getElementById('input-garment').value = '';
-    }
-    checkReady();
+  function setStatus(msg) {
+    document.getElementById('status-text').textContent = msg;
   }
 
-  function checkReady() {
-    const key = document.getElementById('api-key').value.trim();
-    document.getElementById('btn-gen').disabled = !(personB64 && garmentB64 && key);
+  function showError(msg) {
+    clearPoll();
+    document.getElementById('loader').style.display = 'none';
+    const box = document.getElementById('error-box');
+    box.textContent = '❌ ' + msg;
+    box.style.display = 'block';
+    document.getElementById('btn-gen').disabled = false;
   }
 
-  function toggleKey() {
-    const inp = document.getElementById('api-key');
-    inp.type = inp.type === 'password' ? 'text' : 'password';
+  function clearPoll() {
+    if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+    pollCount = 0;
   }
-
-  document.getElementById('input-person').addEventListener('change', e => handleFile('person', e.target.files[0]));
-  document.getElementById('input-garment').addEventListener('change', e => handleFile('garment', e.target.files[0]));
-  document.getElementById('api-key').addEventListener('input', checkReady);
-
-  ['person','garment'].forEach(type => {
-    const zone = document.getElementById(`zone-${type}`);
-    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
-    zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
-    zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('dragover'); handleFile(type, e.dataTransfer.files[0]); });
-  });
-
-  function setLoadingText(t) { document.getElementById('loading-text').textContent = t; }
-  function showError(msg) { const b = document.getElementById('error-box'); b.textContent = msg; b.classList.add('visible'); }
 
   async function generate() {
-    const key = document.getElementById('api-key').value.trim();
-    document.getElementById('error-box').classList.remove('visible');
-    document.getElementById('result-section').classList.remove('visible');
+    // Reset UI
+    clearPoll();
+    document.getElementById('error-box').style.display = 'none';
+    document.getElementById('result-zone').style.display = 'none';
     document.getElementById('result-img').style.display = 'none';
-    document.getElementById('btn-download').classList.remove('visible');
-    document.getElementById('loading').classList.add('visible');
+    document.getElementById('btn-download').style.display = 'none';
+    document.getElementById('loader').style.display = 'flex';
     document.getElementById('btn-gen').disabled = true;
-    document.getElementById('btn-gen').textContent = '⏳ Génération…';
-    setLoadingText('Upload des photos…');
+
+    setStatus('Upload des images en cours…');
 
     try {
-      // Étape 1 : lancer la génération, récupérer requestId
-      setLoadingText('Envoi à LightX…');
-      const startResp = await fetch('/api/proxy', {
+      // Étape 1 : envoyer au proxy → obtenir orderId
+      const proxyRes = await fetch('/api/proxy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ personBase64: personB64, garmentBase64: garmentB64, apiKey: key }),
+        body: JSON.stringify({ personImage: personB64, clothImage: clothB64 }),
       });
-      const startData = await startResp.json();
-      if (!startResp.ok || startData.error) throw new Error(startData.error || 'Erreur démarrage');
 
-      const { requestId } = startData;
-      setLoadingText('L\'IA génère l\'essayage… ⏳');
+      const proxyData = await proxyRes.json();
 
-      // Étape 2 : polling depuis le navigateur toutes les 4s
-      let lastRaw = null;
-      for (let i = 0; i < 45; i++) {
-        await new Promise(r => setTimeout(r, 4000));
-
-        const pollResp = await fetch(`/api/poll?requestId=${encodeURIComponent(requestId)}&apiKey=${encodeURIComponent(key)}`);
-        const pollData = await pollResp.json();
-        lastRaw = pollData;
-        const status = pollData.body?.status || pollData.status || 'inconnu';
-        setLoadingText(`[${pollResp.status}] ${JSON.stringify(pollData).slice(0,150)}`);
-
-        const output = pollData.body?.output || pollData.output;
-        if ((status === 'active' || status === 'success' || status === 'completed') && output) {
-          showResult(output);
-          return;
-        } else if (status === 'failed' || status === 'error') {
-          throw new Error('Génération échouée côté LightX — réponse : ' + JSON.stringify(pollData).slice(0, 300));
-        }
-        // sinon on continue de poller
+      if (!proxyRes.ok || proxyData.error) {
+        showError(proxyData.error || `Erreur proxy ${proxyRes.status}`);
+        return;
       }
 
-      throw new Error('Temps dépassé (3 min). Dernière réponse LightX : ' + JSON.stringify(lastRaw).slice(0, 300));
+      const { orderId } = proxyData;
+      if (!orderId) {
+        showError('Pas de orderId reçu. Réponse : ' + JSON.stringify(proxyData));
+        return;
+      }
+
+      setStatus('Images envoyées à LightX — génération en cours…');
+
+      // Étape 2 : polling toutes les 4 secondes, max 90 tentatives (~6 min)
+      const MAX_POLLS = 90;
+      pollCount = 0;
+
+      pollInterval = setInterval(async () => {
+        pollCount++;
+
+        if (pollCount > MAX_POLLS) {
+          showError('Temps dépassé (6 min). Réessaie.');
+          return;
+        }
+
+        setStatus(`Génération IA en cours… (${pollCount * 4}s)`);
+
+        try {
+          const pollRes = await fetch('/api/poll', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderId }),
+          });
+
+          const pollData = await pollRes.json();
+
+          // LightX renvoie { body: { status, imageUrl } } ou { status, imageUrl }
+          const inner = pollData?.body || pollData;
+          const status = inner?.status;
+          const imageUrl = inner?.imageUrl || inner?.output;
+
+          if (status === 'active' && imageUrl) {
+            // Succès !
+            clearPoll();
+            document.getElementById('loader').style.display = 'none';
+
+            const img = document.getElementById('result-img');
+            img.src = imageUrl;
+            img.style.display = 'block';
+            img.onload = () => {
+              document.getElementById('result-zone').style.display = 'flex';
+            };
+
+            const dl = document.getElementById('btn-download');
+            dl.href = imageUrl;
+            dl.style.display = 'inline-block';
+
+            document.getElementById('btn-gen').disabled = false;
+            return;
+          }
+
+          if (status === 'failed' || status === 'error') {
+            showError('LightX a échoué à générer l\'image. Détails : ' + JSON.stringify(inner));
+            return;
+          }
+
+          // Statuts attendus en attente : 'init', 'processing', 'queued'
+          // On continue à poller…
+
+        } catch (e) {
+          // Erreur réseau sur le poll, on continue
+          setStatus(`Reconnexion… (tentative ${pollCount})`);
+        }
+
+      }, 4000);
 
     } catch (err) {
-      document.getElementById('loading').classList.remove('visible');
-      showError('❌ ' + err.message);
-    } finally {
-      document.getElementById('btn-gen').disabled = false;
-      document.getElementById('btn-gen').textContent = '✨ Générer l\'essayage';
-      checkReady();
+      showError('Erreur réseau : ' + err.message);
     }
   }
-
-  function showResult(url) {
-    const img = document.getElementById('result-img');
-    const dl = document.getElementById('btn-download');
-    img.onload = () => {
-      document.getElementById('loading').classList.remove('visible');
-      document.getElementById('result-section').classList.add('visible');
-      img.style.display = 'block';
-      dl.href = url;
-      dl.classList.add('visible');
-    };
-    img.src = url;
-  }
 </script>
+
 </body>
 </html>
