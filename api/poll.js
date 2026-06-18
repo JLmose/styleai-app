@@ -12,8 +12,12 @@ export default async function handler(req, res) {
 
   try {
     const pr = await fetch(
-      `https://api.lightxeditor.com/external/api/v1/order-status?orderId=${requestId}`,
-      { headers: { 'x-api-key': apiKey, 'Content-Type': 'application/json' } }
+      `https://api.lightxeditor.com/external/api/v1/order-status`,
+      {
+        method: 'POST',
+        headers: { 'x-api-key': apiKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: requestId }),
+      }
     );
     const pd = await pr.json();
     return res.status(200).json(pd);
