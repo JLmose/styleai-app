@@ -13,19 +13,15 @@
     --rose-glow: rgba(232,164,184,0.3); --white: #F8F5F0; --gray: #777; --gray-light: #AAA;
   }
   html, body { background: var(--bg); color: var(--white); font-family: 'Inter', sans-serif; min-height: 100vh; overflow-x: hidden; }
-
   header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(10,10,10,0.95); backdrop-filter: blur(16px); z-index: 100; }
   .logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 600; }
   .logo span { color: var(--rose); }
   .badge { font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--gray); background: var(--surface2); border: 1px solid var(--border); padding: 5px 11px; border-radius: 20px; }
-
   .hero { padding: 36px 24px 28px; text-align: center; }
   .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(26px, 7vw, 38px); font-weight: 400; line-height: 1.2; margin-bottom: 10px; }
   .hero h1 em { color: var(--rose); font-style: italic; }
   .hero p { color: var(--gray-light); font-size: 14px; font-weight: 300; line-height: 1.65; max-width: 340px; margin: 0 auto; }
-
   .main { padding: 0 20px 48px; display: flex; flex-direction: column; gap: 14px; }
-
   .upload-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .upload-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 16px; overflow: hidden; cursor: pointer; transition: border-color 0.2s, transform 0.15s; aspect-ratio: 3/4; display: flex; flex-direction: column; }
   .upload-card:active { transform: scale(0.97); }
@@ -43,7 +39,6 @@
   .card-change { font-size: 11px; color: var(--gray); display: none; }
   .upload-card.has-image .card-change { display: block; }
   input[type="file"] { display: none; }
-
   .api-section { background: var(--surface); border: 1.5px solid var(--border); border-radius: 14px; padding: 16px; }
   .api-label { font-size: 11px; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; display: block; }
   .api-row { display: flex; gap: 8px; align-items: center; }
@@ -53,48 +48,39 @@
   .api-toggle { background: none; border: none; color: var(--gray); cursor: pointer; font-size: 17px; padding: 4px; }
   .api-hint { margin-top: 8px; font-size: 11px; color: var(--gray); line-height: 1.6; }
   .api-hint a { color: var(--rose); text-decoration: none; }
-
-  .btn-generate { width: 100%; padding: 17px; background: var(--rose); color: #0A0A0A; border: none; border-radius: 14px; font-size: 15px; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-generate { width: 100%; padding: 17px; background: var(--rose); color: #0A0A0A; border: none; border-radius: 14px; font-size: 15px; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; transition: opacity 0.2s, transform 0.15s; display: flex; align-items: center; justify-content: center; gap: 8px; }
   .btn-generate:disabled { opacity: 0.3; cursor: not-allowed; }
-  .btn-generate:not(:disabled):active { transform: scale(0.98); box-shadow: 0 0 28px var(--rose-glow); }
-
+  .btn-generate:not(:disabled):active { transform: scale(0.98); }
   .error-box { display: none; background: rgba(220,80,80,0.1); border: 1px solid rgba(220,80,80,0.3); border-radius: 12px; padding: 13px 15px; font-size: 13px; color: #F08080; line-height: 1.5; }
   .error-box.visible { display: block; }
-
   .result-section { display: none; flex-direction: column; gap: 14px; }
   .result-section.visible { display: flex; }
   .result-label { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 400; text-align: center; }
   .result-label span { color: var(--rose); font-style: italic; }
   .result-wrap { border-radius: 20px; overflow: hidden; border: 1.5px solid var(--rose); background: var(--surface); min-height: 280px; display: flex; align-items: center; justify-content: center; }
   .result-wrap img { width: 100%; display: block; }
-
   .loading { display: none; flex-direction: column; align-items: center; gap: 14px; padding: 52px 24px; text-align: center; }
   .loading.visible { display: flex; }
   .spinner { width: 40px; height: 40px; border: 2px solid var(--border); border-top-color: var(--rose); border-radius: 50%; animation: spin 0.9s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .loading-text { font-size: 14px; color: var(--gray-light); font-weight: 300; }
   .loading-sub { font-size: 11px; color: var(--gray); }
-
   .btn-download { width: 100%; padding: 14px; background: transparent; color: var(--rose); border: 1.5px solid var(--rose); border-radius: 13px; font-size: 14px; font-weight: 500; font-family: 'Inter', sans-serif; cursor: pointer; display: none; align-items: center; justify-content: center; gap: 8px; text-decoration: none; transition: background 0.2s; }
   .btn-download:hover { background: var(--rose-dim); }
   .btn-download.visible { display: flex; }
-
   .info-footer { padding: 20px 24px 32px; text-align: center; border-top: 1px solid var(--border); }
   .info-footer p { font-size: 11px; color: var(--gray); line-height: 1.8; }
 </style>
 </head>
 <body>
-
 <header>
   <div class="logo">Style<span>AI</span></div>
   <div class="badge">Essayage IA</div>
 </header>
-
 <div class="hero">
   <h1>Essaye avant<br>d'<em>acheter</em></h1>
   <p>Upload une photo de toi et d'un vêtement — l'IA génère le résultat en photo réelle.</p>
 </div>
-
 <div class="main">
   <div class="upload-row">
     <div class="upload-card" id="card-person" onclick="document.getElementById('input-person').click()">
@@ -126,10 +112,8 @@
       </div>
     </div>
   </div>
-
   <input type="file" id="input-person" accept="image/*">
   <input type="file" id="input-garment" accept="image/*">
-
   <div class="api-section">
     <span class="api-label">Clé API Replicate</span>
     <div class="api-row">
@@ -138,11 +122,8 @@
     </div>
     <div class="api-hint">Gratuit sur <a href="https://replicate.com" target="_blank">replicate.com</a> → Account → API Tokens</div>
   </div>
-
   <div class="error-box" id="error-box"></div>
-
   <button class="btn-generate" id="btn-gen" onclick="generate()" disabled>✨ Générer l'essayage</button>
-
   <div class="result-section" id="result-section">
     <div class="result-label">Voici ton <span>look</span></div>
     <div class="result-wrap" id="result-wrap">
@@ -156,11 +137,9 @@
     <a class="btn-download" id="btn-download" download="styleai-outfit.jpg">⬇ Sauvegarder la photo</a>
   </div>
 </div>
-
 <div class="info-footer">
   <p>Modèle : IDM-VTON · Tes photos ne sont pas stockées<br>Fonctionne sur iPhone & iPad</p>
 </div>
-
 <script>
   let personB64 = null, garmentB64 = null;
 
@@ -210,8 +189,8 @@
     setTimeout(() => document.getElementById('result-section').scrollIntoView({ behavior: 'smooth' }), 200);
 
     try {
-      // Passe par notre proxy Vercel — zéro CORS !
-      const createResp = await fetch('/api/proxy/models/cuuupid/idm-vton/predictions', {
+      // Utilise le format avec version ID exacte
+      const createResp = await fetch('/api/proxy/predictions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -219,6 +198,7 @@
           'Prefer': 'respond-async'
         },
         body: JSON.stringify({
+          version: "0513734a440d5cf23f6dab9d8c0cb32a0a53124c0d4cc4e6f4c67b0b8d59e4e",
           input: {
             human_img: `data:image/jpeg;base64,${personB64}`,
             garm_img: `data:image/jpeg;base64,${garmentB64}`,
@@ -233,26 +213,24 @@
 
       if (!createResp.ok) {
         const err = await createResp.json();
-        throw new Error(err.detail || `Erreur API (${createResp.status})`);
+        throw new Error(err.detail || JSON.stringify(err));
       }
 
       const prediction = await createResp.json();
       const predId = prediction.id;
 
-      // Poll résultat
       for (let i = 0; i < 60; i++) {
         await new Promise(r => setTimeout(r, 2000));
         const pollResp = await fetch(`/api/proxy/predictions/${predId}`, {
           headers: { 'Authorization': `Token ${key}` }
         });
         const pollData = await pollResp.json();
-        if (pollData.status === 'succeeded') {
-          showResult(pollData.output); return;
-        } else if (pollData.status === 'failed' || pollData.status === 'canceled') {
-          throw new Error('Génération échouée. Réessaie.');
+        if (pollData.status === 'succeeded') { showResult(pollData.output); return; }
+        else if (pollData.status === 'failed' || pollData.status === 'canceled') {
+          throw new Error('Génération échouée : ' + (pollData.error || 'erreur inconnue'));
         }
       }
-      throw new Error('Temps dépassé. Réessaie dans quelques instants.');
+      throw new Error('Temps dépassé. Réessaie.');
 
     } catch (err) {
       document.getElementById('loading').classList.remove('visible');
@@ -279,4 +257,3 @@
 </script>
 </body>
 </html>
-
