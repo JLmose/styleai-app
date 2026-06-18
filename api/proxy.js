@@ -2,31 +2,53 @@ export const config = { runtime: 'edge' };
 
 const LIGHTX_API_KEY = 'bf8f904d12974d389c10f9e324f85c96_06e516b72750409a9067d3435766ada0_andoraitools';
 const LIGHTX_TRYON_URL = 'https://api.lightxeditor.com/external/api/v2/aivirtualtryon';
-const IMGUR_CLIENT_ID = 'df1fee79b1c7f2c';
 
-async function uploadToImgur(base64Data) {
-  // Enlève le préfixe "data:image/...;base64," si présent
-  const pureBase64 = base64Data.replace(/^data:image\/[a-z]+;base64,/, '');
+// Convertit base64 en Uint8Array binaire
+function base64ToBytes(b64) {
+  const pure = b64.replace(/^data:image\/[a-z]+;base64,/, '');
+  const binary = atob(pure);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+}
 
-  const res = await fetch('https://api.imgur.com/3/image', {
+// Extrait le mime type depuis le data URL (ex: "image/jpeg")
+function getMime(b64) {
+  const m = b64.match(/^data:(image\/[a-z]+);base64,/);
+  return m ? m[1] : 'image/jpeg';
+}
+
+// Upload une image (base64) sur tmpfiles.org via multipart/form-data
+// Retourne une URL publique directe
+async function uploadToTmpfiles(b64, filename) {
+  const bytes = base64ToBytes(b64);
+  const mime = getMime(b64);
+
+  const formData = new FormData();
+  const blob = new Blob([bytes], { type: mime });
+  formData.append('file', blob, filename);
+
+  const res = await fetch('https://tmpfiles.org/api/v1/upload', {
     method: 'POST',
-    headers: {
-      Authorization: `Client-ID ${IMGUR_CLIENT_ID}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ image: pureBase64, type: 'base64' }),
+    body: formData,
   });
 
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`Imgur upload failed ${res.status}: ${text}`);
+    throw new Error(`tmpfiles upload failed ${res.status}: ${text}`);
   }
 
   const json = await res.json();
-  if (!json.success || !json.data?.link) {
-    throw new Error(`Imgur: pas de lien dans la réponse: ${JSON.stringify(json)}`);
-  }
-  return json.data.link;
+  // tmpfiles retourne: { status: "success", data: { url: "https://tmpfiles.org/123/photo.jpg" } }
+  // L'URL directe est la même mais avec /dl/ au lieu de /
+  const pageUrl = json?.data?.url;
+  if (!pageUrl) throw new Error('tmpfiles: pas d URL dans la réponse: ' + JSON.stringify(json));
+
+  // Convertir https://tmpfiles.org/12345/file.jpg → https://tmpfiles.org/dl/12345/file.jpg
+  const directUrl = pageUrl.replace('tmpfiles.org/', 'tmpfiles.org/dl/');
+  return directUrl;
 }
 
 export default async function handler(req) {
@@ -59,10 +81,10 @@ export default async function handler(req) {
       });
     }
 
-    // 1. Upload les deux images sur Imgur en parallèle
+    // 1. Upload les deux images en parallèle sur tmpfiles.org
     const [personUrl, clothUrl] = await Promise.all([
-      uploadToImgur(personImage),
-      uploadToImgur(clothImage),
+      uploadToTmpfiles(personImage, 'person.jpg'),
+      uploadToTmpfiles(clothImage, 'cloth.jpg'),
     ]);
 
     // 2. Appel LightX virtual try-on
@@ -80,7 +102,7 @@ export default async function handler(req) {
 
     const lightxData = await lightxRes.json();
 
-    // LightX retourne { body: { orderId: "..." } } ou { message: "..." }
+    // LightX retourne { body: { orderId: "..." } }
     const orderId = lightxData?.body?.orderId || lightxData?.orderId;
 
     if (!orderId) {
@@ -93,7 +115,7 @@ export default async function handler(req) {
       );
     }
 
-    return new Response(JSON.stringify({ orderId }), {
+    return new Response(JSON.stringify({ orderId, personUrl, clothUrl }), {
       status: 200,
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
     });
