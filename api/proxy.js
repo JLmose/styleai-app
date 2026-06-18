@@ -1,16 +1,12 @@
 export default async function handler(req, res) {
-  // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Prefer');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const { path } = req.query;
-  const replicatePath = Array.isArray(path) ? path.join('/') : path;
-  const replicateUrl = `https://api.replicate.com/v1/${replicatePath}`;
+  const fullPath = req.url.replace('/api/proxy/', '').replace('/api/proxy', '');
+  const replicateUrl = `https://api.replicate.com/v1/${fullPath}`;
 
   try {
     const response = await fetch(replicateUrl, {
