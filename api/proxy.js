@@ -11,7 +11,6 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Champs manquants' });
   }
 
-  // Upload une image base64 sur Imgur (anonyme, client_id public)
   async function uploadToImgur(base64Data) {
     const cleanB64 = base64Data.replace(/^data:image\/[a-z+]+;base64,/, '');
     const r = await fetch('https://api.imgur.com/3/image', {
@@ -28,7 +27,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Upload les 2 images en parallèle
     let personUrl, garmentUrl;
     try {
       [personUrl, garmentUrl] = await Promise.all([
@@ -36,10 +34,10 @@ export default async function handler(req, res) {
         uploadToImgur(garmentBase64),
       ]);
     } catch (uploadErr) {
-      return res.status(500).json({ error: 'Erreur upload image : ' + uploadErr.message });
+      return res.status(500).json({ error: 'Upload image échoué : ' + uploadErr.message });
     }
 
-    // Appel LightX virtual try-on
+    // Appel LightX — on retourne la réponse RAW complète pour debug
     const lxResp = await fetch('https://api.lightxeditor.com/external/api/v2/aivirtualtryon', {
       method: 'POST',
       headers: {
@@ -50,18 +48,30 @@ export default async function handler(req, res) {
     });
 
     const lxData = await lxResp.json();
+
+    // On retourne TOUT pour voir exactement ce que LightX renvoie
     if (!lxResp.ok) {
       return res.status(lxResp.status).json({
-        error: lxData.message || lxData.error || JSON.stringify(lxData),
+        error: 'LightX error ' + lxResp.status,
+        lightx_response: lxData,
+        urls_used: { personUrl, garmentUrl },
       });
     }
 
-    const requestId = lxData.body?.requestId;
+    const requestId = lxData.body?.requestId || lxData.requestId || lxData.body?.orderId || lxData.orderId;
+
     if (!requestId) {
-      return res.status(500).json({ error: 'Pas de requestId LightX', raw: lxData });
+      // Retourner la réponse complète pour comprendre la structure
+      return res.status(500).json({
+        error: 'Pas de requestId trouvé',
+        lightx_status: lxResp.status,
+        lightx_full_response: lxData,
+        body_keys: lxData.body ? Object.keys(lxData.body) : [],
+        top_keys: Object.keys(lxData),
+      });
     }
 
-    // Polling toutes les 3s, max 40 fois (~2 min)
+    // Polling
     for (let i = 0; i < 40; i++) {
       await new Promise(r => setTimeout(r, 3000));
       const pr = await fetch(
@@ -76,12 +86,11 @@ export default async function handler(req, res) {
       } else if (st === 'failed') {
         return res.status(500).json({ error: 'Génération échouée', raw: pd });
       }
-      // 'init' ou 'processing' → on continue
     }
 
-    return res.status(408).json({ error: 'Temps dépassé — réessaie' });
+    return res.status(408).json({ error: 'Temps dépassé' });
 
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message, stack: err.stack });
   }
 }
