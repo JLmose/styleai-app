@@ -138,7 +138,7 @@
   </div>
 </div>
 <div class="info-footer">
-  <p>Modèle : IDM-VTON · Tes photos ne sont pas stockées<br>Fonctionne sur iPhone & iPad</p>
+  <p>Modèle : IDM-VTON · Tes photos ne sont pas stockées<br>Fonctionne sur iPhone &amp; iPad</p>
 </div>
 <script>
   let personB64 = null, garmentB64 = null;
@@ -189,19 +189,18 @@
     setTimeout(() => document.getElementById('result-section').scrollIntoView({ behavior: 'smooth' }), 200);
 
     try {
-      // Utilise le format avec version ID exacte
       const createResp = await fetch('/api/proxy/predictions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Token ${key}`,
+          'Authorization': 'Token ' + key,
           'Prefer': 'respond-async'
         },
         body: JSON.stringify({
-          version: "0513734a440d5cf23f6dab9d8c0cb32a0a53124c0d4cc4e6f4c67b0b8d59e4e",
+          version: "0513734a452173b8173e907e3a59d19a36266e55b48528559432bd21c7d7e985",
           input: {
-            human_img: `data:image/jpeg;base64,${personB64}`,
-            garm_img: `data:image/jpeg;base64,${garmentB64}`,
+            human_img: 'data:image/jpeg;base64,' + personB64,
+            garm_img: 'data:image/jpeg;base64,' + garmentB64,
             garment_des: 'a garment',
             is_checked: true,
             is_checked_crop: false,
@@ -221,8 +220,8 @@
 
       for (let i = 0; i < 60; i++) {
         await new Promise(r => setTimeout(r, 2000));
-        const pollResp = await fetch(`/api/proxy/predictions/${predId}`, {
-          headers: { 'Authorization': `Token ${key}` }
+        const pollResp = await fetch('/api/proxy/predictions/' + predId, {
+          headers: { 'Authorization': 'Token ' + key }
         });
         const pollData = await pollResp.json();
         if (pollData.status === 'succeeded') { showResult(pollData.output); return; }
